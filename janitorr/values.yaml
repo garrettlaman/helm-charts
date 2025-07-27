@@ -1,0 +1,131 @@
+# General application settings
+replicaCount: 1 # Number of replicas for the deployment
+
+# Image settings
+image:
+  repository: ghcr.io/schaka/janitorr # Docker image repository
+  tag: v1.7.2 # Image tag/version
+  pullPolicy: Always # Image pull policy (Always, Never, IfNotPresent)
+
+# Container settings
+containers:
+  name: janitorr
+  restartPolicy: Always
+
+# Persistent Volume Claim (PVC) settings
+persistence:
+  logVolumeSize: 100Mi # Size of the persistent volume
+  logVolumeStorageClass: local-path # Storage class for the PVC
+
+# User and Group security settings
+securityContext:
+  runAsGroup: 1000
+  runAsUser: 1000
+
+# Configuration map data
+configMap:
+  data:
+    application.yml: |
+      server:
+        port: 8978
+
+      logging:
+        level:
+          com.github.schaka: INFO
+        threshold:
+          file: NONE
+
+      file-system:
+        access: false
+        validate-seeding: true
+        leaving-soon-dir: "/data/media/leaving-soon"
+        media-server-leaving-soon-dir: "/data/media/leaving-soon"
+        from-scratch: true
+        free-space-check-dir: "/"
+
+      application:
+        dry-run: true
+        run-once: false
+        whole-tv-show: false
+        whole-show-seeding-check: false
+        leaving-soon: 14d
+        exclusion-tag: "janitorr_keep"
+        media-deletion:
+          enabled: true
+          movie-expiration:
+            5: 15d
+            10: 30d
+            15: 60d
+            20: 90d
+          season-expiration:
+            5: 15d
+            10: 20d
+            15: 60d
+            20: 120d
+        tag-based-deletion:
+          enabled: true
+          minimum-free-disk-percent: 100
+          schedules:
+            - tag: 5 - demo
+              expiration: 30d
+            - tag: 10 - demo
+              expiration: 7d
+        episode-deletion:
+          enabled: true
+          tag: janitorr_daily
+          max-episodes: 10
+          max-age: 30d
+
+      clients:
+        sonarr:
+          enabled: true
+          url: http://localhost:8989
+          api-key: "my-key"
+          delete-empty-shows: true
+          determine-age-by: MOST_RECENT
+        radarr:
+          enabled: true
+          url: http://localhost:7878
+          api-key: "my-key"
+          only-delete-files: false
+          determine-age-by: most_recent
+        bazarr:
+          enabled: false
+          url: http://localhost:6767
+          api-key: "my-key"
+        jellyfin:
+          enabled: true
+          url: http://localhost:8096
+          api-key: "my-key"
+          username: Janitorr
+          password: "my-key"
+          delete: true
+          leaving-soon-tv: "Shows (Leaving Soon)"
+          leaving-soon-movies: "Movies (Leaving Soon)"
+          leaving-soon-type: MOVIES_AND_TV
+        emby:
+          enabled: false
+          url: "http://localhost:8096"
+          api-key: "4da8d93992804489ba2d1f0e31b8316c"
+          username: Janitorr
+          password: janitorr
+          delete: true # Emby setup is required for JellyStat. However, if you don't want Janitorr to send delete requests to the Emby API, disable it here
+          leaving-soon-tv: "Shows (Leaving Soon)"
+          leaving-soon-movies: "Movies (Leaving Soon)"
+          leaving-soon-type: MOVIES_AND_TV
+        jellyseerr:
+          enabled: true
+          url: "http://localhost:5055"
+          api-key: "MTY3NzU3NzI0NzgzOWFhNWYxMGE4LWNlMWYtNDc1ZS04ODYzLThkMjQyMTQ4M2NiZCe="
+          match-server: false # Enable if you have several Radarr/Sonarr instances set up in Jellyseerr. Janitorr will match them by the host+port supplied in their respective config settings.
+        jellystat: # Only one, Jellystat or Streamystats can be used
+          enabled: true
+          whole-tv-show: false # Enabling this will make Jellystat consider TV shows as a whole if any episode of any season has been watched
+          url: "http://jellystat:3000"
+          api-key: "jellystat-key"
+        streamystats: # Only one, Streamystats or Jellystat can be used
+          enabled: false
+          whole-tv-show: false # Enabling this will make Streamystats consider TV shows as a whole if any episode of any season has been watched
+          url: "http://streamystats:3000"
+          username: Janitorr
+          password: janitorr

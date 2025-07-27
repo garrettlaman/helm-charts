@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: janitorr-logs
+  name: janitorr-logs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logVolumeSize }}
+  storageClassName: {{ .Values.persistence.logVolumeStorageClass }}
