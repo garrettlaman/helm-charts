@@ -18,7 +18,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-        - image: {{ .Values.image.repository }}:{{ .Values.image.tag}}
+        - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           livenessProbe:
             exec:
               command:
@@ -27,6 +27,7 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 5
           name: {{ .Values.containers.name }}
+          restartPolicy: {{ .Values.containers.restartPolicy }}
           securityContext:
             runAsGroup: {{ .Values.securityContext.runAsGroup }}
             runAsUser: {{ .Values.securityContext.runAsUser }}
@@ -37,7 +38,13 @@ spec:
               readOnly: true
             - mountPath: /logs
               name: janitorr-logs
-      restartPolicy: {{ .Values.containers.restartPolicy }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
       volumes:
         - name: {{ include "janitorr.fullname" . }}-config
           configMap:

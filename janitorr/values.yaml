@@ -1,11 +1,11 @@
 # General application settings
-replicaCount: 1 # Number of replicas for the deployment
+replicaCount: 1
 
 # Image settings
 image:
-  repository: ghcr.io/schaka/janitorr # Docker image repository
-  tag: v1.7.2 # Image tag/version
-  pullPolicy: Always # Image pull policy (Always, Never, IfNotPresent)
+  repository: ghcr.io/schaka/janitorr
+  tag: v1.7.2
+  pullPolicy: IfNotPresent
 
 # Container settings
 containers:
@@ -14,13 +14,20 @@ containers:
 
 # Persistent Volume Claim (PVC) settings
 persistence:
-  logVolumeSize: 100Mi # Size of the persistent volume
-  logVolumeStorageClass: local-path # Storage class for the PVC
+  logVolumeSize: 100Mi
 
 # User and Group security settings
 securityContext:
   runAsGroup: 1000
   runAsUser: 1000
+
+resources:
+  requests:
+    cpu: "0.25"
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
 
 # Configuration map data
 configMap:
