@@ -4,7 +4,7 @@ replicaCount: 1
 # Image settings
 image:
   repository: ghcr.io/schaka/janitorr
-  tag: v1.7.2
+  tag: v1.7.3
   pullPolicy: IfNotPresent
 
 # Container settings
@@ -19,7 +19,7 @@ persistence:
 # User and Group security settings
 securityContext:
   runAsGroup: 1000
-  runAsUser: 
+  runAsUser: 1000
 
 # CPU and memory limits
 resources:
