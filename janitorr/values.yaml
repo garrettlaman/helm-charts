@@ -19,8 +19,9 @@ persistence:
 # User and Group security settings
 securityContext:
   runAsGroup: 1000
-  runAsUser: 1000
+  runAsUser: 
 
+# CPU and memory limits
 resources:
   requests:
     cpu: "0.25"
