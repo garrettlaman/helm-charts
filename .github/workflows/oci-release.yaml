@@ -28,7 +28,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | \
             helm registry login $REGISTRY -u ${{ github.actor }} --password-stdin
 
-      - name: Lint (optional)
+      - name: Lint
         run: helm lint charts/* || true
 
       - name: Package & Push charts
