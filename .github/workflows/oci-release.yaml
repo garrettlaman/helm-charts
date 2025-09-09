@@ -1,0 +1,45 @@
+name: Publish Helm charts to GHCR (OCI)
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'charts/**' ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io
+      OWNER: garrettlaman
+      REPO_BASE: ghcr.io/garrettlaman/helm-charts
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: azure/setup-helm@v4
+        with: { version: v3.15.3 }
+
+      - name: Login to GHCR for Helm
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            helm registry login $REGISTRY -u ${{ github.actor }} --password-stdin
+
+      - name: Lint (optional)
+        run: helm lint charts/* || true
+
+      - name: Package & Push charts
+        run: |
+          shopt -s nullglob
+          mkdir -p dist
+          for c in charts/*; do
+            [ -f "$c/Chart.yaml" ] || continue
+            helm package "$c" -d dist
+          done
+          for f in dist/*.tgz; do
+            echo "Pushing $f"
+            helm push "$f" oci://$REPO_BASE
+          done
