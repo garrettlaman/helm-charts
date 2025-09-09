@@ -17,6 +17,7 @@ spec:
         app.kubernetes.io/name: {{ include "janitorr.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      restartPolicy: {{ .Values.containers.restartPolicy }}
       containers:
         - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           livenessProbe:
@@ -27,7 +28,6 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 5
           name: {{ .Values.containers.name }}
-          restartPolicy: {{ .Values.containers.restartPolicy }}
           securityContext:
             runAsGroup: {{ .Values.securityContext.runAsGroup }}
             runAsUser: {{ .Values.securityContext.runAsUser }}
