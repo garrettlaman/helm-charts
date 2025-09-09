@@ -15,6 +15,7 @@ containers:
 # Persistent Volume Claim (PVC) settings
 persistence:
   logVolumeSize: 100Mi
+  logVolumeStorageClass: longhorn
 
 # User and Group security settings
 securityContext:
